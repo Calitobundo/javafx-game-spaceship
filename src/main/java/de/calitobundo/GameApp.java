@@ -12,7 +12,6 @@ public class GameApp extends Application {
     public static final double HEIGHT = 1000;
 
     private GameContext context;
-    private GameContext context2;
     private Canvas canvas = new Canvas(WIDTH, HEIGHT);
 
     public static void main(String[] args) {
