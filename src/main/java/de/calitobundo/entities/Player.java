@@ -10,8 +10,8 @@ import javafx.scene.input.KeyEvent;
 
 public class Player extends GameItem implements PlayerController {
 
-    private final double ACCELERATION = 400;
-    private final double VELOCITY_MAX = 400;
+    private final double ACCELERATION = 2400;
+    private final double VELOCITY_MAX = 600;
 
     private final GameContext context;
 
