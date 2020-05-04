@@ -17,6 +17,9 @@ public class Player extends GameItem implements PlayerController {
 
     private Image image;
 
+    private double autofireTime = 0.2;
+    private boolean autofire = false;
+
     public Player(GameContext context) {
         this.context = context;
         this.image = new Image(getClass().getResourceAsStream("/images/ship.png"), 150, 150, false, false);
@@ -29,6 +32,7 @@ public class Player extends GameItem implements PlayerController {
     @Override
     public void update(double delta) {
         time += delta;
+        autofireTime+= delta;
 
         vx += ax * delta;
         vy += ay * delta;
@@ -50,6 +54,14 @@ public class Player extends GameItem implements PlayerController {
         y += vy * delta;
 
         check(75);
+
+        if(autofire){
+            if(autofireTime > 0.1) {
+                autofireTime = 0;
+                Rocket rocket = new Rocket(x, y);
+                context.addGameItem(rocket);
+            }
+        }
 
     }
 
@@ -101,13 +113,18 @@ public class Player extends GameItem implements PlayerController {
         }
     }
 
+
+
     @Override
     public void onFire(EventType<KeyEvent> eventType) {
 
+        autofireTime = 0;
         if(eventType == KeyEvent.KEY_PRESSED) {
-            Rocket rocket = new Rocket(x, y);
-            context.addGameItem(rocket);
+            autofire = true;
+        }else if(eventType == KeyEvent.KEY_RELEASED) {
+            autofire = false;
         }
+
     }
 
 }

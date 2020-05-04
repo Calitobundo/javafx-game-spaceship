@@ -17,6 +17,7 @@ public class GameContext {
     private final GameTimer timer;
     private final Canvas canvas;
     private final List<GameItem> items = new ArrayList<>();
+    private final List<GameItem> addItems = new ArrayList<>();
 
     public GameContext(Canvas canvas) {
         this.canvas = canvas;
@@ -39,6 +40,8 @@ public class GameContext {
         for (GameItem item : items) {
             item.update(delta);
         }
+        items.addAll(addItems);
+        addItems.clear();
     }
 
     public void render(GraphicsContext gc){
@@ -49,7 +52,8 @@ public class GameContext {
         }
     }
 
+
     public void addGameItem(GameItem item) {
-        items.add(item);
+        addItems.add(item);
     }
 }

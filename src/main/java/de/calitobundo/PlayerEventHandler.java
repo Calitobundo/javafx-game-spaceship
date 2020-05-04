@@ -9,6 +9,7 @@ public class PlayerEventHandler implements EventHandler<KeyEvent> {
 
     private Player player;
 
+
     public PlayerEventHandler(Player player) {
         this.player = player;
     }
