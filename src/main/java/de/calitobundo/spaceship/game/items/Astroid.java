@@ -2,30 +2,23 @@ package de.calitobundo.spaceship.game.items;
 
 import de.calitobundo.spaceship.game.GameContext;
 import de.calitobundo.spaceship.game.GameItem;
+import de.calitobundo.spaceship.game.GameItemImage;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Astroid extends GameItem {
 
-    public static final double IMAGE_WIDTH = 50; //25
-    public static final double IMAGE_HEIGHT = 50; //25
-    public static final double IMAGE_FRAMES = 48;
-
-    public static final List<Image> ROCKET_IMAGES = new ArrayList<>();
 
     static {
-        for (int i = 1; i <= IMAGE_FRAMES; i++) {
-            Image image = new Image(Rocket.class.getClassLoader().getResourceAsStream("images/astdroid/gold/steinGold" + i + ".png"), IMAGE_WIDTH, IMAGE_HEIGHT, false, false);
-            ROCKET_IMAGES.add(image);
-        }
+
+        GameItemImage itemImage = new GameItemImage("images/astdroid/gold/steinGold", ".png", 48, 50, 50);
+        GameItemImage.map.put(Astroid.class, itemImage);
+
     }
 
     public Astroid(GameContext context) {
-        super(context, IMAGE_WIDTH / 2);
+        super(context, 1, 25, GameItemImage.map.get(Astroid.class));
+
     }
 
     @Override
@@ -40,10 +33,6 @@ public class Astroid extends GameItem {
         x += vx * delta;
         y += vy * delta;
 
-        frame++;
-        if (frame >= IMAGE_FRAMES - 1)
-            frame = 0;
-
         if (liveTime > 6) {
             context.itemsToRemove.add(this);
         }
@@ -53,12 +42,12 @@ public class Astroid extends GameItem {
     @Override
     public void render(GraphicsContext gc) {
 
-        gc.drawImage(ROCKET_IMAGES.get(frame), x - IMAGE_WIDTH/2, y - IMAGE_HEIGHT/2);
+        double sw = scale * itemImage.width;
+        double sh = scale * itemImage.height;
 
-        if (context.debug) {
-            gc.setStroke(color);
-            gc.strokeOval(x - radius, y - radius, 2 * radius, 2 * radius);
-        }
+        gc.drawImage(itemImage.nextFrame(this), x - sw/2, y - sh/2, sw, sh);
+
+        super.render(gc);
     }
 
     @Override

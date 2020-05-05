@@ -1,4 +1,4 @@
-# SpaceShipe
+# SpaceShip
 
 ## Key Commands
 

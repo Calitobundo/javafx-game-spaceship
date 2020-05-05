@@ -3,6 +3,7 @@ package de.calitobundo.spaceship.game;
 import de.calitobundo.spaceship.game.items.Astroid;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 
 import java.util.*;
 
@@ -13,10 +14,9 @@ public abstract class GameItem {
     public Color defaultColor = Color.CORNFLOWERBLUE;;
     public Color color = defaultColor;
 
-    public GameContext context;
-    public Set<GameItem> collisions = new HashSet<>();
-
-    public int frame = 0;
+    public final GameContext context;
+    public final GameItemImage itemImage;
+    public final Set<GameItem> collisions = new HashSet<>();
 
     public double time = 0;
     public double liveTime = 0;
@@ -30,19 +30,46 @@ public abstract class GameItem {
     public double x = GameApp.WIDTH/2;
     public double y = 0;
 
-    public double radius = 0;
+    public double radius;
+    public double scale;
+
+    public int currentFrame = 0;
 
 
-    public GameItem(GameContext context, double radius){
-        this.context = context;
-        this.radius = radius;
+
+    public GameItem(GameContext context, double radius, GameItemImage itemImage){
+        this(context, 1, radius, itemImage);
+
     }
+
+    public GameItem(GameContext context, double scale, double radius, GameItemImage itemImage) {
+        this.context = context;
+        this.scale = scale;
+        this.radius = scale * radius;
+        this.itemImage = itemImage;
+    }
+
 
     public void update(double delta) {
         color = defaultColor;
+        this.delta = delta;
     }
 
-    public abstract void render(GraphicsContext gc);
+    private double delta = 0;
+    public void render(GraphicsContext gc) {
+
+        if (context.debug) {
+            gc.setFont(new Font("Verdana", 20));
+            gc.setFill(Color.BLACK);
+            gc.setStroke(Color.CORNFLOWERBLUE);
+            gc.strokeOval(x - radius, y - radius, 2 * radius, 2 * radius);
+            gc.fillText(""+currentFrame, x, y);
+            gc.setFill(Color.GRAY);
+            gc.fillText("Delta: "+delta,220,40);
+
+        }
+
+    }
 
     public void onCollision(GameItem item){
         color = collisionColor;

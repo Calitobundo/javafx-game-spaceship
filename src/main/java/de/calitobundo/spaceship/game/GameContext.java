@@ -11,20 +11,24 @@ import javafx.scene.text.Font;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 
 public class GameContext {
 
     public boolean debug = true;
 
     private final GameTimer timer;
-    private final Canvas canvas;
+    public final Canvas canvas;
 
-    public final List<de.calitobundo.spaceship.game.GameItem> items = new ArrayList<>();
-    public final List<de.calitobundo.spaceship.game.GameItem> itemsToAdd = new ArrayList<>();
-    public final List<de.calitobundo.spaceship.game.GameItem> itemsToRemove = new ArrayList<>();
+    //Game Events
+    public final List<GameEvent> events = new ArrayList<>();
+
+    //Game Items
+    public final List<GameItem> items = new ArrayList<>();
+    public final List<GameItem> itemsToAdd = new ArrayList<>();
+    public final List<GameItem> itemsToRemove = new ArrayList<>();
 
     private final Player player = new Player(this);;
-    private double eventTime = 0;
 
 
     public GameContext(Canvas canvas) {
@@ -38,47 +42,53 @@ public class GameContext {
 
         items.add(player);
         canvas.addEventHandler(KeyEvent.ANY  , new GameItemEventHandler(player));
-        timer.start();
-    }
 
+        GameEvent addAstdroidEvent = new GameEvent(this,0.4);
+        events.add(addAstdroidEvent);
+        addAstdroidEvent.set(() -> {
 
-    public void onFrame(double delta) {
-
-        update(delta);
-        render(canvas.getGraphicsContext2D());
-
-        eventTime += delta;
-        if(eventTime > 0.15){
-            eventTime = 0;
             Random random = new Random();
-            for (int i = 0; i < 2; i++){
+            for (int i = 0; i < 2; i++) {
                 Astroid astroid = new Astroid(this);
-                astroid.frame = random.nextInt(48);
+                //astroid.frame = random.nextInt(48);
+                astroid.scale = 0.5 + 1.4 * random.nextDouble();
                 astroid.vx = 400 * random.nextDouble() - 200;
                 astroid.vy = 200 + 200 * random.nextDouble();
                 astroid.x = GameApp.WIDTH * random.nextDouble();
                 astroid.y = -100 * random.nextDouble();
                 items.add(astroid);
             }
-        }
+
+        });
+
+
+        timer.start();
     }
 
 
-    public void update(double delta){
+    public void nextFrame(double delta, GraphicsContext graphicsContext) {
+
+        updateItems(delta);
+        renderItems(graphicsContext);
+        updateEvents(delta);
+    }
+
+
+    public void updateItems(double delta){
 
         //update all items
-        for (de.calitobundo.spaceship.game.GameItem item : items) {
+        for (GameItem item : items) {
             item.update(delta);
         }
 
         //test on collisions
-        de.calitobundo.spaceship.game.GameItem.testAllOnCollision(items);
+        GameItem.testAllOnCollision(items);
 
         //remove destroyed items
         items.removeAll(itemsToRemove);
 
         //destroy items
-        itemsToRemove.forEach(de.calitobundo.spaceship.game.GameItem::onDestroy);
+        itemsToRemove.forEach(GameItem::onDestroy);
         itemsToRemove.clear();
 
         //add new items
@@ -88,12 +98,12 @@ public class GameContext {
     }
 
 
-    public void render(GraphicsContext gc){
+    public void renderItems(GraphicsContext gc){
 
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, GameApp.WIDTH, GameApp.HEIGHT);
 
-        for (de.calitobundo.spaceship.game.GameItem item : items) {
+        for (GameItem item : items) {
             item.render(gc);
         }
 
@@ -104,7 +114,13 @@ public class GameContext {
     }
 
 
-    public void addGameItem(de.calitobundo.spaceship.game.GameItem item) {
+    public void updateEvents(double delta){
+        for (GameEvent event : events) {
+            event.update(delta);
+        }
+    }
+
+    public void addGameItem(GameItem item) {
         itemsToAdd.add(item);
     }
 }

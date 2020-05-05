@@ -1,31 +1,30 @@
 package de.calitobundo.spaceship.game.items;
 
-import de.calitobundo.spaceship.game.GameApp;
-import de.calitobundo.spaceship.game.GameContext;
-import de.calitobundo.spaceship.game.GameItem;
-import de.calitobundo.spaceship.game.GameItemController;
+import de.calitobundo.spaceship.game.*;
 import javafx.event.EventType;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public class Player extends GameItem implements GameItemController {
 
-    public static final double IMAGE_WIDTH = 150; //25
-    public static final double IMAGE_HEIGHT = 150; //25
-    private final double ACCELERATION = 2400;
-    private final double VELOCITY_MAX = 1200;
+    static {
 
-    private Image image;
+        GameItemImage itemImage = new GameItemImage("images/ship.png",  150, 150);
+        GameItemImage.map.put(Player.class, itemImage);
+
+    }
+
+    private final double ACCELERATION = 2400;
+    private final double VELOCITY_MAX = 600;
 
     private double autofireTime = 0.5;
     private boolean autofire = false;
 
+
     public Player(GameContext context) {
-        super(context, IMAGE_WIDTH/2);
-        this.image = new Image(getClass().getResourceAsStream("/images/ship.png"), IMAGE_WIDTH, IMAGE_HEIGHT, false, false);
+        super(context, 1,65, GameItemImage.map.get(Player.class));
 
         x = GameApp.WIDTH/2;
         y = 2 * GameApp.HEIGHT/5;
@@ -86,12 +85,11 @@ public class Player extends GameItem implements GameItemController {
     @Override
     public void render(GraphicsContext gc) {
 
-        gc.drawImage(image, x - IMAGE_WIDTH/2, y - IMAGE_HEIGHT/2);
+        double sw = scale * itemImage.width;
+        double sh = scale * itemImage.height;
 
-        if (context.debug) {
-            gc.setStroke(color);
-            gc.strokeOval(x - radius, y - radius, 2 * radius, 2 * radius);
-        }
+        gc.drawImage(itemImage.nextFrame(this), x - sw/2, y - sh/2, sw, sh);
+
         gc.setFont(new Font("Verdana", 20));
         gc.setFill(Color.GRAY);
         gc.fillText("CollisionCount: "+collissionCount, 20, 60);
@@ -99,6 +97,8 @@ public class Player extends GameItem implements GameItemController {
         gc.fillText("right: "+right, 20, 100);
         gc.fillText("up: "+up, 20, 120);
         gc.fillText("down: "+down, 20, 140);
+
+        super.render(gc);
 
     }
 
