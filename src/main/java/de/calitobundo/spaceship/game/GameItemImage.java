@@ -9,7 +9,6 @@ import java.util.Map;
 
 public class GameItemImage {
 
-    public static Map<Class, GameItemImage> map = new HashMap<>();
 
     public final List<Image> images = new ArrayList<>();
 
@@ -50,6 +49,12 @@ public class GameItemImage {
             item.currentFrame = 0;
 
         return images.get(item.currentFrame);
+
+    }
+
+    public Image getFirstFrame() {
+
+        return images.get(0);
 
     }
 }

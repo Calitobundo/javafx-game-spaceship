@@ -51,6 +51,11 @@ public class GameItemEventHandler implements EventHandler<KeyEvent> {
                     item.context.debug = !item.context.debug;
                 break;
 
+            case R:
+                if(event.getEventType() == KeyEvent.KEY_PRESSED)
+                    item.context.restart();
+                break;
+
             default:
                 break;
         }

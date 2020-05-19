@@ -19,6 +19,7 @@ public abstract class GameItem {
     public final Set<GameItem> collisions = new HashSet<>();
 
     public double time = 0;
+    public long liveEnergie = 100;
     public double liveTime = 0;
 
     public double ax = 0;
@@ -45,24 +46,31 @@ public abstract class GameItem {
     public GameItem(GameContext context, double scale, double radius, GameItemImage itemImage) {
         this.context = context;
         this.scale = scale;
-        this.radius = scale * radius;
+        this.radius = radius;
         this.itemImage = itemImage;
     }
 
+    protected abstract void update(double delta);
 
-    public void update(double delta) {
+    protected abstract void render(GraphicsContext gc);
+
+    public abstract void onDestroy();
+
+
+    public void updateItem(double delta) {
         color = defaultColor;
         this.delta = delta;
+        update(delta);
     }
 
     private double delta = 0;
-    public void render(GraphicsContext gc) {
-
+    public void renderItem(GraphicsContext gc) {
+        render(gc);
         if (context.debug) {
             gc.setFont(new Font("Verdana", 20));
             gc.setFill(Color.BLACK);
-            gc.setStroke(Color.CORNFLOWERBLUE);
-            gc.strokeOval(x - radius, y - radius, 2 * radius, 2 * radius);
+            gc.setStroke(Color.WHITE);
+            gc.strokeOval(x - scale*radius, y - scale*radius, 2 * scale*radius, 2 * scale*radius);
             gc.fillText(""+currentFrame, x, y);
             gc.setFill(Color.GRAY);
             gc.fillText("Delta: "+delta,220,40);
@@ -75,7 +83,7 @@ public abstract class GameItem {
         color = collisionColor;
     };
 
-    public abstract void onDestroy();
+
 
 
     public List<GameItem> testCollision(List<GameItem> items) {
@@ -100,9 +108,7 @@ public abstract class GameItem {
 
     public static void testAllOnCollision(List<GameItem> items) {
 
-        items.stream().forEach(item -> {
-            item.collisions.clear();
-        });
+        items.forEach(GameItem::clearCollisions);
 
         for (GameItem testItem : items) {
 
@@ -113,7 +119,7 @@ public abstract class GameItem {
                     double dx = testItem.x - item.x;
                     double dy = testItem.y - item.y;
                     double distance = Math.sqrt(dx * dx + dy * dy);
-                    double minDistance = testItem.radius + item.radius;
+                    double minDistance = testItem.scale * testItem.radius + testItem.scale * item.radius;
 
                     if (distance < minDistance) {
 
@@ -127,6 +133,10 @@ public abstract class GameItem {
                 }
             }
         }
+    }
+
+    public void clearCollisions() {
+        collisions.clear();
     }
 
     public void checkBoundsAndStopByCollision(){

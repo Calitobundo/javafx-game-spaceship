@@ -2,28 +2,20 @@ package de.calitobundo.spaceship.game.items;
 
 import de.calitobundo.spaceship.game.GameContext;
 import de.calitobundo.spaceship.game.GameItem;
-import de.calitobundo.spaceship.game.GameItemImage;
+import de.calitobundo.spaceship.game.GameResource;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 public class Astroid extends GameItem {
 
-
-    static {
-
-        GameItemImage itemImage = new GameItemImage("images/astdroid/gold/steinGold", ".png", 48, 50, 50);
-        GameItemImage.map.put(Astroid.class, itemImage);
-
-    }
+    private int maxLiveTime = 5;
 
     public Astroid(GameContext context) {
-        super(context, 1, 25, GameItemImage.map.get(Astroid.class));
-
+        super(context, 1, 25, GameResource.getItemImage(Astroid.class));
     }
 
     @Override
-    public void update(double delta) {
-        super.update(delta);
+    protected void update(double delta) {
 
         liveTime += delta;
 
@@ -33,21 +25,20 @@ public class Astroid extends GameItem {
         x += vx * delta;
         y += vy * delta;
 
-        if (liveTime > 6) {
+        if (liveTime > maxLiveTime) {
             context.itemsToRemove.add(this);
         }
 
     }
 
     @Override
-    public void render(GraphicsContext gc) {
+    protected void render(GraphicsContext gc) {
 
         double sw = scale * itemImage.width;
         double sh = scale * itemImage.height;
 
         gc.drawImage(itemImage.nextFrame(this), x - sw/2, y - sh/2, sw, sh);
 
-        super.render(gc);
     }
 
     @Override
@@ -57,13 +48,35 @@ public class Astroid extends GameItem {
 
     @Override
     public void onCollision(GameItem item) {
+
         if(item instanceof Rocket){
-            color = Color.YELLOWGREEN;
+
+            if(scale < 0.3)
+                return;
+
+            final int count = 5;
+            double angle = 0;
+            for (int i = 0; i < count; i++) {
+
+                angle += 2 * Math.PI / count;
+                Astroid astroid = new Astroid(context);
+                astroid.scale = scale/2;
+                astroid.maxLiveTime = 2;
+                astroid.x = x;
+                astroid.y = y;
+                astroid.vx = 100 * Math.cos(angle);
+                astroid.vy = 100 * Math.sin(angle);
+                context.itemsToAdd.add(astroid);
+            }
+
+
+
             context.itemsToRemove.add(this);
         }
-        if(item instanceof Player){
-            color = Color.GREEN;
-        }
+
+//        if(item instanceof Player){
+//            color = Color.GREEN;
+//        }
     }
 
 }

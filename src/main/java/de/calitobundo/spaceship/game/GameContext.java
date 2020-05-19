@@ -7,13 +7,14 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Consumer;
 
 public class GameContext {
+
 
     public boolean debug = true;
 
@@ -28,8 +29,10 @@ public class GameContext {
     public final List<GameItem> itemsToAdd = new ArrayList<>();
     public final List<GameItem> itemsToRemove = new ArrayList<>();
 
-    private final Player player = new Player(this);;
+    private final GameItemImage itemImage = GameResource.getItemImage(GameContext.class);
 
+    public Player player = new Player(this);
+    private GameItemEventHandler handler = new GameItemEventHandler(player);
 
     public GameContext(Canvas canvas) {
 
@@ -37,23 +40,41 @@ public class GameContext {
         this.timer = new GameTimer(this);
     }
 
+    public void restart() {
+        items.clear();
+        itemsToAdd.clear();
+        itemsToRemove.clear();
+        player = new Player(this);
+        items.add(player);
+        canvas.removeEventHandler(KeyEvent.ANY, handler);
+        handler = new GameItemEventHandler(player);
+        canvas.addEventHandler(KeyEvent.ANY  , handler);
+
+    }
+
 
     public void start(){
 
         items.add(player);
-        canvas.addEventHandler(KeyEvent.ANY  , new GameItemEventHandler(player));
+        handler = new GameItemEventHandler(player);
+        canvas.addEventHandler(KeyEvent.ANY  , handler);
+        addAstdroids();
+        timer.start();
+    }
 
-        GameEvent addAstdroidEvent = new GameEvent(this,0.4);
+    private void addAstdroids(){
+
+        GameEvent addAstdroidEvent = new GameEvent(this,2);
         events.add(addAstdroidEvent);
         addAstdroidEvent.set(() -> {
 
             Random random = new Random();
-            for (int i = 0; i < 2; i++) {
+            for (int i = 0; i < 5; i++) {
                 Astroid astroid = new Astroid(this);
-                //astroid.frame = random.nextInt(48);
-                astroid.scale = 0.5 + 1.4 * random.nextDouble();
-                astroid.vx = 400 * random.nextDouble() - 200;
-                astroid.vy = 200 + 200 * random.nextDouble();
+                astroid.currentFrame = random.nextInt(48);
+                astroid.scale = 0.5 + random.nextDouble();
+                astroid.vx = 3*(40 * random.nextDouble() - 20);
+                astroid.vy = 3*(20 + 20 * random.nextDouble());
                 astroid.x = GameApp.WIDTH * random.nextDouble();
                 astroid.y = -100 * random.nextDouble();
                 items.add(astroid);
@@ -61,16 +82,19 @@ public class GameContext {
 
         });
 
-
-        timer.start();
     }
 
 
     public void nextFrame(double delta, GraphicsContext graphicsContext) {
 
-        updateItems(delta);
-        renderItems(graphicsContext);
-        updateEvents(delta);
+        if(player.liveEnergie <= 0){
+            renderItems(graphicsContext);
+        }else{
+            updateItems(delta);
+            renderItems(graphicsContext);
+            updateEvents(delta);
+        }
+
     }
 
 
@@ -78,7 +102,7 @@ public class GameContext {
 
         //update all items
         for (GameItem item : items) {
-            item.update(delta);
+            item.updateItem(delta);
         }
 
         //test on collisions
@@ -98,19 +122,48 @@ public class GameContext {
     }
 
 
+    private double backgroundY = 0;
+
     public void renderItems(GraphicsContext gc){
 
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, GameApp.WIDTH, GameApp.HEIGHT);
 
+        backgroundY++;
+        if(backgroundY > 1000)
+            backgroundY = 0;
+
+        gc.drawImage(itemImage.getFirstFrame(), 0, backgroundY);
+        gc.drawImage(itemImage.getFirstFrame(), 0, backgroundY - 1000);
+
         for (GameItem item : items) {
-            item.render(gc);
+            item.renderItem(gc);
+        }
+
+        // render points
+        gc.setFont(new Font("Verdana", 20));
+        gc.setFill(Color.WHITE);
+        gc.fillText("Points: "+player.points, 10, 1000-10);
+
+        if(player.liveEnergie <= 0){
+            gc.setFont(new Font("Verdana", 40));
+            gc.setTextAlign(TextAlignment.CENTER);
+            gc.fillText("Game Over", 300, 500);
+            gc.fillText(player.points+" Points", 300, 500+40);
+            gc.fillText("Press R to restart", 300, 500+80);
+            gc.setTextAlign(TextAlignment.LEFT);
+
+
         }
 
         //debug
-        gc.setFont(new Font("Verdana", 20));
-        gc.setFill(Color.GRAY);
-        gc.fillText("GameItems: "+items.size(),20,40);
+        if(debug) {
+            gc.setFont(new Font("Verdana", 20));
+            gc.setFill(Color.GRAY);
+            gc.fillText("GameItems: " + items.size(), 20, 40);
+        }
+            gc.fillText("FPS: " + timer.fps, 500, 40);
+
     }
 
 
@@ -120,7 +173,5 @@ public class GameContext {
         }
     }
 
-    public void addGameItem(GameItem item) {
-        itemsToAdd.add(item);
-    }
+
 }
