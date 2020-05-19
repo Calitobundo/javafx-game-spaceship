@@ -12,7 +12,7 @@ public class Player extends GameItem implements GameItemController {
     private final double ACCELERATION = 2400;
     private final double VELOCITY_MAX = 600;
 
-    private double autofireTime = 0.5;
+    private double autofireTime = 1;
     private boolean autofire = false;
 
     private double collisionTime = 0;
@@ -70,7 +70,7 @@ public class Player extends GameItem implements GameItemController {
         checkBoundsAndStopByCollision();
 
         if(autofire){
-            if(autofireTime > 0.3) {
+            if(autofireTime > 0.2) {
                 autofireTime = 0;
                 Rocket rocket = new Rocket(context, x, y);
                 context.itemsToAdd.add(rocket);
@@ -100,7 +100,7 @@ public class Player extends GameItem implements GameItemController {
         if(collisionTime < 0.5)
             gc.setFill(Color.RED);
         else
-            gc.setFill(Color.YELLOW);
+            gc.setFill(Color.GREEN);
         gc.fillRect(x1, y1, w, h);
 
         gc.fillRect(0, 0, GameApp.WIDTH * ((double)liveEnergie/100), 20);
@@ -210,7 +210,7 @@ public class Player extends GameItem implements GameItemController {
     @Override
     public void onFire(EventType<KeyEvent> eventType) {
 
-        autofireTime = 1;
+        //autofireTime = 1;
         if(eventType == KeyEvent.KEY_PRESSED) {
             autofire = true;
         }else if(eventType == KeyEvent.KEY_RELEASED) {

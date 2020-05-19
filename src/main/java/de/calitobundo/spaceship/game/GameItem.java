@@ -71,9 +71,9 @@ public abstract class GameItem {
             gc.setFill(Color.BLACK);
             gc.setStroke(Color.WHITE);
             gc.strokeOval(x - scale*radius, y - scale*radius, 2 * scale*radius, 2 * scale*radius);
-            gc.fillText(""+currentFrame, x, y);
+            //gc.fillText(""+currentFrame, x, y);
             gc.setFill(Color.GRAY);
-            gc.fillText("Delta: "+delta,220,40);
+            //gc.fillText("Delta: "+delta,220,40);
 
         }
 

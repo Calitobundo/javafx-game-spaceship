@@ -19,7 +19,7 @@ public final class GameResource {
         map.put(Explosion.class, new GameItemImage("images/explosion/testbackhole", ".png", 24, 100, 100));
 
         map.put(Player.class, new GameItemImage("images/ship.png",  150, 150));
-        map.put(GameContext.class, new GameItemImage("images/background2.png", 600, 1000));
+        map.put(GameContext.class, new GameItemImage("images/background.png", 600, 1000));
 
 
 

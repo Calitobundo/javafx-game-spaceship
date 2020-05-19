@@ -6,6 +6,8 @@ import de.calitobundo.spaceship.game.GameResource;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
+import java.util.Random;
+
 public class Astroid extends GameItem {
 
     private int maxLiveTime = 5;
@@ -51,32 +53,31 @@ public class Astroid extends GameItem {
 
         if(item instanceof Rocket){
 
-            if(scale < 0.3)
+            if(scale < 0.2) {
+                context.itemsToRemove.add(this);
                 return;
+            }
+            Random random = new Random();
 
-            final int count = 5;
-            double angle = 0;
+            final int count = 5 + random.nextInt(6);
+            double angle = Math.PI * random.nextDouble();
             for (int i = 0; i < count; i++) {
 
                 angle += 2 * Math.PI / count;
                 Astroid astroid = new Astroid(context);
                 astroid.scale = scale/2;
-                astroid.maxLiveTime = 2;
+                astroid.maxLiveTime = maxLiveTime/2;
                 astroid.x = x;
                 astroid.y = y;
-                astroid.vx = 100 * Math.cos(angle);
-                astroid.vy = 100 * Math.sin(angle);
+                astroid.vx = (50 + 100 * random.nextDouble()) * Math.cos(angle);
+                astroid.vy = (50 + 100 * random.nextDouble()) * Math.sin(angle);
                 context.itemsToAdd.add(astroid);
             }
-
-
 
             context.itemsToRemove.add(this);
         }
 
-//        if(item instanceof Player){
-//            color = Color.GREEN;
-//        }
+
     }
 
 }

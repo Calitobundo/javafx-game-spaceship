@@ -49,7 +49,6 @@ public class GameContext {
         canvas.removeEventHandler(KeyEvent.ANY, handler);
         handler = new GameItemEventHandler(player);
         canvas.addEventHandler(KeyEvent.ANY  , handler);
-
     }
 
 
