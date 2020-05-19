@@ -1,11 +1,9 @@
-package de.calitobundo.spaceship.game;
+package de.calitobundo.spaceship.game.item;
 
 import javafx.scene.image.Image;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GameItemImage {
 

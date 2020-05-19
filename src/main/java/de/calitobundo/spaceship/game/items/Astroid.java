@@ -1,16 +1,16 @@
 package de.calitobundo.spaceship.game.items;
 
 import de.calitobundo.spaceship.game.GameContext;
-import de.calitobundo.spaceship.game.GameItem;
+import de.calitobundo.spaceship.game.ItemFactory;
+import de.calitobundo.spaceship.game.item.GameItem;
 import de.calitobundo.spaceship.game.GameResource;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
 import java.util.Random;
 
 public class Astroid extends GameItem {
 
-    private int maxLiveTime = 5;
+    public double maxLiveTime = 10;
 
     public Astroid(GameContext context) {
         super(context, 1, 25, GameResource.getItemImage(Astroid.class));
@@ -36,10 +36,8 @@ public class Astroid extends GameItem {
     @Override
     protected void render(GraphicsContext gc) {
 
-        double sw = scale * itemImage.width;
-        double sh = scale * itemImage.height;
-
-        gc.drawImage(itemImage.nextFrame(this), x - sw/2, y - sh/2, sw, sh);
+        double radius = bounds.getScaledRadius();
+        gc.drawImage(itemImage.nextFrame(this), x - radius, y - radius, 2*radius, 2*radius);
 
     }
 
@@ -53,27 +51,12 @@ public class Astroid extends GameItem {
 
         if(item instanceof Rocket){
 
-            if(scale < 0.2) {
+            if(bounds.scale/2 < 0.5) {
                 context.itemsToRemove.add(this);
                 return;
             }
-            Random random = new Random();
 
-            final int count = 5 + random.nextInt(6);
-            double angle = Math.PI * random.nextDouble();
-            for (int i = 0; i < count; i++) {
-
-                angle += 2 * Math.PI / count;
-                Astroid astroid = new Astroid(context);
-                astroid.scale = scale/2;
-                astroid.maxLiveTime = maxLiveTime/2;
-                astroid.x = x;
-                astroid.y = y;
-                astroid.vx = (50 + 100 * random.nextDouble()) * Math.cos(angle);
-                astroid.vy = (50 + 100 * random.nextDouble()) * Math.sin(angle);
-                context.itemsToAdd.add(astroid);
-            }
-
+            ItemFactory.createAstroids(context, this);
             context.itemsToRemove.add(this);
         }
 

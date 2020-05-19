@@ -1,13 +1,20 @@
 package de.calitobundo.spaceship.game;
 
+import de.calitobundo.spaceship.game.item.GameItem;
+import de.calitobundo.spaceship.game.item.GameItemImage;
+
 import de.calitobundo.spaceship.game.items.Astroid;
+import de.calitobundo.spaceship.game.items.Bonus;
+import de.calitobundo.spaceship.game.items.Enemy;
 import de.calitobundo.spaceship.game.items.Player;
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+import timer.Timer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +25,8 @@ public class GameContext {
 
     public boolean debug = true;
 
-    private final GameTimer timer;
+    //private final GameTimer timer;
+    public Timer timer;
     public final Canvas canvas;
 
     //Game Events
@@ -37,7 +45,15 @@ public class GameContext {
     public GameContext(Canvas canvas) {
 
         this.canvas = canvas;
-        this.timer = new GameTimer(this);
+        timer = new Timer(16, delta -> {
+
+            Platform.runLater(() -> {
+                final GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+                nextFrame((double)delta/1000, graphicsContext);
+            });
+
+        });
+        //this.timer = new GameTimer(this);
     }
 
     public void restart() {
@@ -66,19 +82,40 @@ public class GameContext {
         GameEvent addAstdroidEvent = new GameEvent(this,2);
         events.add(addAstdroidEvent);
         addAstdroidEvent.set(() -> {
-
             Random random = new Random();
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 2; i++) {
                 Astroid astroid = new Astroid(this);
                 astroid.currentFrame = random.nextInt(48);
-                astroid.scale = 0.5 + random.nextDouble();
+                astroid.bounds.scale = 0.5 + 2 * random.nextDouble();
                 astroid.vx = 3*(40 * random.nextDouble() - 20);
                 astroid.vy = 3*(20 + 20 * random.nextDouble());
                 astroid.x = GameApp.WIDTH * random.nextDouble();
                 astroid.y = -100 * random.nextDouble();
                 items.add(astroid);
             }
+        });
 
+        GameEvent bonusEvent = new GameEvent(this,5);
+        events.add(bonusEvent);
+        bonusEvent.set(() -> {
+
+            Random random = new Random();
+            Bonus bonus = new Bonus(this);
+            bonus.x = GameApp.WIDTH * random.nextDouble();
+            bonus.y = 100 + 400 * random.nextDouble();
+            items.add(bonus);
+        });
+
+        GameEvent enemyEvent = new GameEvent(this,2);
+        events.add(enemyEvent);
+        enemyEvent.set(() -> {
+
+            Random random = new Random();
+            Enemy enemy = new Enemy(this);
+            enemy.vx = 100;
+            enemy.x = GameApp.WIDTH * random.nextDouble();
+            enemy.y = 100 + 200 * random.nextDouble();
+            items.add(enemy);
         });
 
     }
@@ -118,6 +155,10 @@ public class GameContext {
         items.addAll(itemsToAdd);
         itemsToAdd.clear();
 
+        backgroundY += 75 * delta;
+        if(backgroundY > 1000)
+            backgroundY = 0;
+
     }
 
 
@@ -128,9 +169,7 @@ public class GameContext {
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, GameApp.WIDTH, GameApp.HEIGHT);
 
-        backgroundY++;
-        if(backgroundY > 1000)
-            backgroundY = 0;
+
 
         gc.drawImage(itemImage.getFirstFrame(), 0, backgroundY);
         gc.drawImage(itemImage.getFirstFrame(), 0, backgroundY - 1000);
@@ -161,7 +200,7 @@ public class GameContext {
             gc.setFill(Color.GRAY);
             gc.fillText("GameItems: " + items.size(), 20, 40);
         }
-            gc.fillText("FPS: " + timer.fps, 500, 40);
+            gc.fillText("FPS: " + timer.fps, 460, 40);
 
     }
 

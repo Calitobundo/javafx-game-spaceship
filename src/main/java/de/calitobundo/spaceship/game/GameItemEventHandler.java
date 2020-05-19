@@ -1,5 +1,6 @@
 package de.calitobundo.spaceship.game;
 
+import de.calitobundo.spaceship.game.item.GameItem;
 import de.calitobundo.spaceship.game.items.Player;
 import javafx.event.EventHandler;
 import javafx.event.EventType;

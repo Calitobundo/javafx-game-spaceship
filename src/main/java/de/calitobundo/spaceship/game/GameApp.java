@@ -19,6 +19,11 @@ public class GameApp extends Application {
     }
 
     @Override
+    public void stop() throws Exception {
+        context.timer.stop();
+    }
+
+    @Override
     public void start(Stage stage) throws Exception {
 
         StackPane root = new StackPane();

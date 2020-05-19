@@ -1,7 +1,8 @@
 package de.calitobundo.spaceship.game.items;
 
 import de.calitobundo.spaceship.game.GameContext;
-import de.calitobundo.spaceship.game.GameItem;
+import de.calitobundo.spaceship.game.ItemFactory;
+import de.calitobundo.spaceship.game.item.GameItem;
 import de.calitobundo.spaceship.game.GameResource;
 import javafx.scene.canvas.GraphicsContext;
 
@@ -15,7 +16,7 @@ public class Rocket extends GameItem {
 
 
     public Rocket(GameContext context, double x, double y) {
-        super(context, 1,30, GameResource.getItemImage(Rocket.class));
+        super(context, 0.75,30, GameResource.getItemImage(Rocket.class));
         this.x = x;
         this.y = y;
         this.vy = -800;
@@ -40,8 +41,8 @@ public class Rocket extends GameItem {
     @Override
     protected void render(GraphicsContext gc) {
 
-        double sw = scale * itemImage.width;
-        double sh = scale * itemImage.height;
+        double sw = bounds.scale * itemImage.width;
+        double sh = bounds.scale * itemImage.height;
 
         gc.save();
         gc.translate(x, y);
@@ -61,23 +62,19 @@ public class Rocket extends GameItem {
 
         if(item instanceof Astroid){
 
-            Random random = new Random();
-
             context.player.points += 20;
+            context.itemsToRemove.add(this);
+            ItemFactory.createExplosions(context, this, 10, 2, 1);
 
-            for (int i = 0; i < 10; i++) {
+        }
 
-                double randAngle = 2 * Math.PI * random.nextDouble();
-                double randDistance = 2 * item.radius * item.scale * random.nextDouble();
+        if(item instanceof Enemy){
 
-                Explosion exp = new Explosion(context);
-                exp.x = item.x + randDistance * Math.cos(randAngle);
-                exp.y = item.y + randDistance * Math.sin(randAngle);
-                context.itemsToAdd.add(exp);
-
-            }
+            context.player.points += 100;
+            ItemFactory.createExplosions(context, this, 50, 3, 5);
             context.itemsToRemove.add(this);
         }
+
     }
 
 
