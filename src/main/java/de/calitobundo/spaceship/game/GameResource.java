@@ -1,10 +1,7 @@
 package de.calitobundo.spaceship.game;
 
 import de.calitobundo.spaceship.game.item.GameItemImage;
-import de.calitobundo.spaceship.game.items.Astroid;
-import de.calitobundo.spaceship.game.items.Explosion;
-import de.calitobundo.spaceship.game.items.Player;
-import de.calitobundo.spaceship.game.items.Rocket;
+import de.calitobundo.spaceship.game.items.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +17,7 @@ public final class GameResource {
         map.put(Explosion.class, new GameItemImage("images/explosion/testbackhole", ".png", 24, 100, 100));
 
         map.put(Player.class, new GameItemImage("images/ship.png",  150, 150));
+        map.put(Enemy.class, new GameItemImage("images/enemy.png",  150, 150));
         map.put(GameContext.class, new GameItemImage("images/background2.png", 600, 1000));
 
     }

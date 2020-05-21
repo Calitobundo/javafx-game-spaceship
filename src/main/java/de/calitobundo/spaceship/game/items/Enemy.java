@@ -10,11 +10,22 @@ public class Enemy extends GameItem {
 
 
     public Enemy(GameContext context) {
-        super(context, 50, GameResource.getItemImage(Player.class));
+        super(context, 50, GameResource.getItemImage(Enemy.class));
     }
+
+    double fireTime = 0;
 
     @Override
     protected void update(double delta) {
+
+        fireTime += delta;
+        if(fireTime > 2){
+            fireTime = 0;
+            Rocket rocket = new Rocket(context, x, y, Enemy.class);
+            rocket.vy *= -1;
+            context.itemsToAdd.add(rocket);
+        }
+
 
         x += vx * delta;
 
@@ -35,7 +46,9 @@ public class Enemy extends GameItem {
 
         if(item instanceof Rocket){
 
-            context.itemsToRemove.add(this);
+            Rocket r = (Rocket) item;
+            if(r.type == Player.class)
+                context.itemsToRemove.add(this);
 
         }
     }

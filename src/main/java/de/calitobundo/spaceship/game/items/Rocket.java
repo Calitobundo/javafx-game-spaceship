@@ -12,11 +12,13 @@ public class Rocket extends GameItem {
 
 
     public Player player = null;
+    public Class type;
 
 
 
-    public Rocket(GameContext context, double x, double y) {
+    public Rocket(GameContext context, double x, double y, Class type) {
         super(context, 0.75,30, GameResource.getItemImage(Rocket.class));
+        this.type = type;
         this.x = x;
         this.y = y;
         this.vy = -800;
@@ -70,9 +72,11 @@ public class Rocket extends GameItem {
 
         if(item instanceof Enemy){
 
-            context.player.points += 100;
-            ItemFactory.createExplosions(context, this, 50, 3, 5);
-            context.itemsToRemove.add(this);
+            if(type != Enemy.class) {
+                context.player.points += 100;
+                ItemFactory.createExplosions(context, this, 50, 3, 5);
+                context.itemsToRemove.add(this);
+            }
         }
 
     }

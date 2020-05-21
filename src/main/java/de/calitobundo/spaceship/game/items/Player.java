@@ -75,7 +75,7 @@ public class Player extends GameItem implements GameItemController {
         if(autofire){
             if(autofireTime > 0.125) {
                 autofireTime = 0;
-                Rocket rocket1 = new Rocket(context, x, y);
+                Rocket rocket1 = new Rocket(context, x, y, Player.class);
 //                Rocket rocket2 = new Rocket(context, x+20, y);
 //                Rocket rocket3 = new Rocket(context, x-20, y);
 //                Rocket rocket4 = new Rocket(context, x-40, y);
@@ -134,7 +134,7 @@ public class Player extends GameItem implements GameItemController {
     public void onCollision(GameItem item) {
 
         if(item instanceof Enemy){
-
+            collisionTime = 0;
             liveEnergie -= 10;
             context.player.points += 100;
             context.itemsToRemove.add(item);
@@ -142,7 +142,7 @@ public class Player extends GameItem implements GameItemController {
         }
 
         if(item instanceof Astroid){
-
+            collisionTime = 0;
             liveEnergie -= 5;
             context.itemsToRemove.add(item);
             ItemFactory.createExplosions(context, this, 10, 3, 2);
@@ -153,6 +153,15 @@ public class Player extends GameItem implements GameItemController {
 
             points += 500;
             context.itemsToRemove.add(item);
+        }
+
+        if(item instanceof Rocket){
+
+            Rocket r = (Rocket) item;
+            if(r.type == Enemy.class){
+                collisionTime = 0;
+                liveEnergie -= 10;
+            }
         }
 
     }

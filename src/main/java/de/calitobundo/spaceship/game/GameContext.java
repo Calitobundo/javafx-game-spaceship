@@ -45,7 +45,7 @@ public class GameContext {
     public GameContext(Canvas canvas) {
 
         this.canvas = canvas;
-        timer = new Timer(16, delta -> {
+        timer = new Timer(10, delta -> {
 
             Platform.runLater(() -> {
                 final GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
@@ -155,7 +155,7 @@ public class GameContext {
         items.addAll(itemsToAdd);
         itemsToAdd.clear();
 
-        backgroundY += 75 * delta;
+        backgroundY += 500 * delta;
         if(backgroundY > 1000)
             backgroundY = 0;
 
