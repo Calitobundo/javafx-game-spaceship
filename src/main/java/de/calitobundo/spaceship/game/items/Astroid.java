@@ -51,13 +51,17 @@ public class Astroid extends GameItem {
 
         if(item instanceof Rocket){
 
-            if(bounds.scale/2 < 0.5) {
-                context.itemsToRemove.add(this);
-                return;
-            }
+            Rocket r = (Rocket) item;
+            if(r.type == Player.class) {
 
-            ItemFactory.createAstroids(context, this);
-            context.itemsToRemove.add(this);
+                if (bounds.scale / 2 < 0.5) {
+                    context.itemsToRemove.add(this);
+                    return;
+                }
+
+                ItemFactory.createAstroids(context, this);
+                context.itemsToRemove.add(this);
+            }
         }
 
 

@@ -75,13 +75,13 @@ public class Player extends GameItem implements GameItemController {
         if(autofire){
             if(autofireTime > 0.125) {
                 autofireTime = 0;
-                Rocket rocket1 = new Rocket(context, x, y, Player.class);
-//                Rocket rocket2 = new Rocket(context, x+20, y);
-//                Rocket rocket3 = new Rocket(context, x-20, y);
+//                Rocket rocket1 = new Rocket(context, x, y, Player.class);
+                Rocket rocket2 = new Rocket(context, x+20, y, Player.class);
+                Rocket rocket3 = new Rocket(context, x-20, y, Player.class);
 //                Rocket rocket4 = new Rocket(context, x-40, y);
-                context.itemsToAdd.add(rocket1);
-//                context.itemsToAdd.add(rocket2);
-//                context.itemsToAdd.add(rocket3);
+                //context.itemsToAdd.add(rocket1);
+                context.itemsToAdd.add(rocket2);
+                context.itemsToAdd.add(rocket3);
 //                context.itemsToAdd.add(rocket4);
 
             }
@@ -152,6 +152,10 @@ public class Player extends GameItem implements GameItemController {
         if(item instanceof Bonus){
 
             points += 500;
+            liveEnergie += 50;
+            if(liveEnergie > 100)
+                liveEnergie = 100;
+
             context.itemsToRemove.add(item);
         }
 
@@ -161,6 +165,7 @@ public class Player extends GameItem implements GameItemController {
             if(r.type == Enemy.class){
                 collisionTime = 0;
                 liveEnergie -= 10;
+                context.itemsToRemove.add(item);
             }
         }
 

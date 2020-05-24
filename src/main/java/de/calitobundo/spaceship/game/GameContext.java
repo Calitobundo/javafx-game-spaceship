@@ -79,14 +79,14 @@ public class GameContext {
 
     private void addAstdroids(){
 
-        GameEvent addAstdroidEvent = new GameEvent(this,2);
+        GameEvent addAstdroidEvent = new GameEvent(this,5.0);
         events.add(addAstdroidEvent);
         addAstdroidEvent.set(() -> {
             Random random = new Random();
             for (int i = 0; i < 2; i++) {
                 Astroid astroid = new Astroid(this);
                 astroid.currentFrame = random.nextInt(48);
-                astroid.bounds.scale = 0.5 + 2 * random.nextDouble();
+                astroid.bounds.scale = 0.5 + 10.0 * random.nextDouble();
                 astroid.vx = 3*(40 * random.nextDouble() - 20);
                 astroid.vy = 3*(20 + 20 * random.nextDouble());
                 astroid.x = GameApp.WIDTH * random.nextDouble();
@@ -109,6 +109,10 @@ public class GameContext {
         GameEvent enemyEvent = new GameEvent(this,2);
         events.add(enemyEvent);
         enemyEvent.set(() -> {
+
+            long count = items.stream().filter(item -> item.getClass() == Enemy.class).count();
+            if(count > 3)
+                return;
 
             Random random = new Random();
             Enemy enemy = new Enemy(this);
@@ -155,7 +159,7 @@ public class GameContext {
         items.addAll(itemsToAdd);
         itemsToAdd.clear();
 
-        backgroundY += 500 * delta;
+        backgroundY += 250 * delta;
         if(backgroundY > 1000)
             backgroundY = 0;
 
